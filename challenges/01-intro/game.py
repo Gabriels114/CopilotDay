@@ -62,7 +62,7 @@ class GameState:
 
         if new_spawn_timer >= self.config.mole_spawn_interval:
             new_board = new_board.try_spawn()
-            new_spawn_timer = 0.0
+            new_spawn_timer -= self.config.mole_spawn_interval
 
         return GameState(
             phase=Phase.PLAYING,
@@ -74,8 +74,10 @@ class GameState:
         )
 
     def whack(self, row: int, col: int) -> "GameState":
+        if self.phase != Phase.PLAYING:
+            return self
         new_board, hit = self.board.try_whack(row, col)
-        new_score = self.score + (1 if hit else 0)
+        new_score = self.score + (self.config.score_multiplier if hit else 0)
         return GameState(
             phase=self.phase,
             config=self.config,

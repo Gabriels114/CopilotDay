@@ -86,6 +86,16 @@ def test_get_uses_row_col_formula():
             assert board.get(r, c) is board.moles[r * 4 + c]
 
 
+@pytest.mark.parametrize(
+    ("row", "col"),
+    [(-1, 0), (0, -1), (3, 0), (0, 3)],
+)
+def test_get_rejects_out_of_bounds_coordinates(row, col):
+    board = Board.create(3, 3)
+    with pytest.raises(IndexError):
+        board.get(row, col)
+
+
 # ---------------------------------------------------------------------------
 # update()
 # ---------------------------------------------------------------------------
@@ -220,6 +230,17 @@ def test_try_whack_does_not_affect_other_moles():
     new_board, _ = board.try_whack(0, 0)
     for i in range(1, 9):
         assert new_board.moles[i].state == MoleState.HIDDEN
+
+
+@pytest.mark.parametrize(
+    ("row", "col"),
+    [(-1, 0), (0, -1), (3, 0), (0, 3)],
+)
+def test_try_whack_out_of_bounds_returns_miss_and_same_board(row, col):
+    board = Board.create(3, 3)
+    new_board, hit = board.try_whack(row, col)
+    assert new_board is board
+    assert hit is False
 
 
 # ---------------------------------------------------------------------------

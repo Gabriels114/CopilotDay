@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from enum import Enum
 from typing import Tuple
 
 GRID_SIZES = [3, 4, 5]
@@ -30,12 +31,41 @@ COLORS = {
 }
 
 
+class Difficulty(Enum):
+    EASY   = "easy"
+    MEDIUM = "medium"
+    HARD   = "hard"
+    INSANE = "insane"
+
+
+DIFFICULTIES = [Difficulty.EASY, Difficulty.MEDIUM, Difficulty.HARD, Difficulty.INSANE]
+
+DIFFICULTY_SETTINGS = {
+    Difficulty.EASY:   {"mole_visible_time": 2.0, "mole_spawn_interval": 1.5, "score_multiplier": 1},
+    Difficulty.MEDIUM: {"mole_visible_time": 1.4, "mole_spawn_interval": 0.9, "score_multiplier": 2},
+    Difficulty.HARD:   {"mole_visible_time": 0.9, "mole_spawn_interval": 0.6, "score_multiplier": 3},
+    Difficulty.INSANE: {"mole_visible_time": 0.5, "mole_spawn_interval": 0.4, "score_multiplier": 5},
+}
+
+DIFFICULTY_COLORS = {
+    Difficulty.EASY:   (60, 200, 60),    # green
+    Difficulty.MEDIUM: (255, 180, 0),    # orange
+    Difficulty.HARD:   (220, 60, 60),    # red
+    Difficulty.INSANE: (160, 0, 220),    # purple
+}
+
+
 @dataclass(frozen=True)
 class GameConfig:
     grid_size: int = 3
     game_duration: int = 30
     mole_visible_time: float = 1.4
     mole_spawn_interval: float = 0.9
+    difficulty: Difficulty = Difficulty.MEDIUM
+
+    @property
+    def score_multiplier(self) -> int:
+        return DIFFICULTY_SETTINGS[self.difficulty]["score_multiplier"]
 
     @property
     def grid_rows(self) -> int:
@@ -53,6 +83,7 @@ class GameConfig:
             game_duration=self.game_duration,
             mole_visible_time=self.mole_visible_time,
             mole_spawn_interval=self.mole_spawn_interval,
+            difficulty=self.difficulty,
         )
 
     def prev_size(self) -> "GameConfig":
@@ -63,6 +94,7 @@ class GameConfig:
             game_duration=self.game_duration,
             mole_visible_time=self.mole_visible_time,
             mole_spawn_interval=self.mole_spawn_interval,
+            difficulty=self.difficulty,
         )
 
     def next_duration(self) -> "GameConfig":
@@ -73,6 +105,7 @@ class GameConfig:
             game_duration=DURATIONS[new_idx],
             mole_visible_time=self.mole_visible_time,
             mole_spawn_interval=self.mole_spawn_interval,
+            difficulty=self.difficulty,
         )
 
     def prev_duration(self) -> "GameConfig":
@@ -83,4 +116,29 @@ class GameConfig:
             game_duration=DURATIONS[new_idx],
             mole_visible_time=self.mole_visible_time,
             mole_spawn_interval=self.mole_spawn_interval,
+            difficulty=self.difficulty,
+        )
+
+    def next_difficulty(self) -> "GameConfig":
+        idx = DIFFICULTIES.index(self.difficulty)
+        new_diff = DIFFICULTIES[(idx + 1) % len(DIFFICULTIES)]
+        settings = DIFFICULTY_SETTINGS[new_diff]
+        return GameConfig(
+            grid_size=self.grid_size,
+            game_duration=self.game_duration,
+            mole_visible_time=settings["mole_visible_time"],
+            mole_spawn_interval=settings["mole_spawn_interval"],
+            difficulty=new_diff,
+        )
+
+    def prev_difficulty(self) -> "GameConfig":
+        idx = DIFFICULTIES.index(self.difficulty)
+        new_diff = DIFFICULTIES[(idx - 1) % len(DIFFICULTIES)]
+        settings = DIFFICULTY_SETTINGS[new_diff]
+        return GameConfig(
+            grid_size=self.grid_size,
+            game_duration=self.game_duration,
+            mole_visible_time=settings["mole_visible_time"],
+            mole_spawn_interval=settings["mole_spawn_interval"],
+            difficulty=new_diff,
         )

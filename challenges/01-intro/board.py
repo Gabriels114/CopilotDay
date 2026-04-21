@@ -16,7 +16,19 @@ class Board:
         moles = tuple(Mole() for _ in range(rows * cols))
         return cls(rows=rows, cols=cols, moles=moles)
 
+    def _in_bounds(self, row: int, col: int) -> bool:
+        return 0 <= row < self.rows and 0 <= col < self.cols
+
+    def _validate_coordinates(self, row: int, col: int) -> None:
+        if self._in_bounds(row, col):
+            return
+        raise IndexError(
+            f"Board coordinates out of range: row={row}, col={col}, "
+            f"size={self.rows}x{self.cols}"
+        )
+
     def _index(self, row: int, col: int) -> int:
+        self._validate_coordinates(row, col)
         return row * self.cols + col
 
     def get(self, row: int, col: int) -> Mole:
@@ -42,6 +54,8 @@ class Board:
         return self._replace_mole(idx, new_mole)
 
     def try_whack(self, row: int, col: int) -> Tuple["Board", bool]:
+        if not self._in_bounds(row, col):
+            return self, False
         idx = self._index(row, col)
         mole = self.moles[idx]
         if not mole.is_whackable():

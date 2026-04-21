@@ -23,13 +23,13 @@ La guía original menciona prerrequisitos comunes de hacks orientados a Azure, p
 
 Marca cada punto cuando quede validado.
 
-- [ ] Tengo una cuenta de GitHub y puedo iniciar sesión.
-- [ ] Mi correo de GitHub está verificado.
-- [ ] Tengo Visual Studio Code instalado.
-- [ ] Puedo abrir este repositorio en VS Code sin problemas.
-- [ ] Tengo acceso a GitHub Copilot en mi cuenta personal u organización.
-- [ ] La extensión de GitHub Copilot está instalada y habilitada en VS Code.
-- [ ] Veo sugerencias inline o puedo abrir Copilot Chat desde VS Code.
+- [*] Tengo una cuenta de GitHub y puedo iniciar sesión.
+- [*] Mi correo de GitHub está verificado.
+- [*] Tengo Visual Studio Code instalado.
+- [*] Puedo abrir este repositorio en VS Code sin problemas.
+- [*] Tengo acceso a GitHub Copilot en mi cuenta personal u organización.
+- [*] La extensión de GitHub Copilot está instalada y habilitada en VS Code.
+- [*] Veo sugerencias inline o puedo abrir Copilot Chat desde VS Code.
 
 ## Pasos
 

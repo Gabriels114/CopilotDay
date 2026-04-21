@@ -3,7 +3,7 @@ from typing import Dict, Optional, Tuple
 
 import pygame
 
-from config import COLORS, GameConfig
+from config import COLORS, DIFFICULTY_COLORS, GameConfig
 from mole import MoleState
 
 WINDOW_W = 800
@@ -194,6 +194,11 @@ def draw_hud(
     timer_surf = font_large.render(f"Time: {secs}s", True, timer_color)
     surface.blit(timer_surf, (WINDOW_W - timer_surf.get_width() - 20, 15))
 
+    diff_color = DIFFICULTY_COLORS[state.config.difficulty]
+    diff_label = state.config.difficulty.value.upper()
+    diff_surf = font_medium.render(diff_label, True, diff_color)
+    surface.blit(diff_surf, (WINDOW_W // 2 - diff_surf.get_width() // 2, 15))
+
     bar_x, bar_y = 20, HUD_H - 22
     bar_w = WINDOW_W - 40
     bar_h = 12
@@ -264,17 +269,33 @@ def draw_menu(
     _draw_button(surface, prev_dur_rect, "<", font_large, mouse_pos)
     _draw_button(surface, next_dur_rect, ">", font_large, mouse_pos)
 
-    play_rect = pygame.Rect(cx - 100, 430, 200, 55)
+    row_y3 = 450
+    caption3 = font_medium.render("Difficulty", True, COLORS["text_gold"])
+    surface.blit(caption3, (cx - caption3.get_width() // 2, row_y3 - 28))
+
+    diff_color = DIFFICULTY_COLORS[state.config.difficulty]
+    diff_name = state.config.difficulty.value.upper()
+    label_diff = font_large.render(diff_name, True, diff_color)
+    surface.blit(label_diff, (cx - label_diff.get_width() // 2, row_y3 + 5))
+
+    prev_diff_rect = pygame.Rect(cx - 120 - btn_w, row_y3, btn_w, btn_h)
+    next_diff_rect = pygame.Rect(cx + 120, row_y3, btn_w, btn_h)
+    _draw_button(surface, prev_diff_rect, "<", font_large, mouse_pos)
+    _draw_button(surface, next_diff_rect, ">", font_large, mouse_pos)
+
+    play_rect = pygame.Rect(cx - 100, 545, 200, 55)
     _draw_button(surface, play_rect, "PLAY", font_large, mouse_pos)
 
     hint = font_medium.render("Click a mole to whack it!", True, COLORS["text_white"])
-    surface.blit(hint, (cx - hint.get_width() // 2, 510))
+    surface.blit(hint, (cx - hint.get_width() // 2, 620))
 
     return {
         "prev_size": prev_size_rect,
         "next_size": next_size_rect,
         "prev_dur": prev_dur_rect,
         "next_dur": next_dur_rect,
+        "prev_diff": prev_diff_rect,
+        "next_diff": next_diff_rect,
         "play": play_rect,
     }
 

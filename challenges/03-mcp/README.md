@@ -28,13 +28,35 @@ export GITHUB_TOKEN="ghp_tu_token_aqui"
 source ~/.zshrc
 ```
 
+La configuración de este repo usa una sola variable local, `GITHUB_TOKEN`. En `.vscode/mcp.json`, VS Code la toma del entorno y la reexpone dentro del contenedor como `GITHUB_PERSONAL_ACCESS_TOKEN`, que es el nombre esperado por el servidor oficial de GitHub.
+
 ## Paso 3: Verificar la configuración MCP
 
-El archivo `.vscode/mcp.json` ya está configurado en este repo. Verifica que Docker puede descargar la imagen:
+El archivo `.vscode/mcp.json` ya está configurado en este repo para usar el servidor oficial `ghcr.io/github/github-mcp-server` sobre `stdio`.
+
+Antes de abrir VS Code, valida dos cosas desde terminal:
 
 ```bash
 docker pull ghcr.io/github/github-mcp-server
 ```
+
+```bash
+docker run --rm -i \
+  -e GITHUB_PERSONAL_ACCESS_TOKEN="$GITHUB_TOKEN" \
+  -e GITHUB_TOOLSETS="context,repos,issues,pull_requests" \
+  ghcr.io/github/github-mcp-server
+```
+
+Qué esperar:
+
+- Si Docker no está corriendo, verás un error del daemon de Docker.
+- Si el token no está exportado o no tiene permisos, el servidor fallará al iniciar o al primer uso de herramientas.
+- Si el contenedor arranca sin errores inmediatos y queda esperando entrada, la configuración base es válida. Sal con `Ctrl+C`.
+
+Notas sobre la configuración:
+
+- El filtrado de capacidades se hace con `GITHUB_TOOLSETS`, porque en Docker el servidor oficial espera esa configuración como variable de entorno.
+- Este repo habilita `context,repos,issues,pull_requests`, que cubre el reto sin exponer toolsets innecesarios.
 
 ## Paso 4: Crear Issues en GitHub
 
@@ -62,8 +84,16 @@ gh label create devops --color "#bfd4f2"
 
 1. Abre VS Code en la carpeta del proyecto
 2. Abre **Copilot Chat** (Ctrl+Alt+I o ⌃⌘I)
-3. El servidor MCP debería aparecer en el selector de herramientas
-4. Si no aparece: **VS Code → Command Palette → MCP: List Servers**
+3. Ejecuta **MCP: List Servers** desde la Command Palette
+4. Verifica que aparece un servidor llamado `github` y que su estado está disponible
+5. Abre el selector de herramientas del chat de Copilot y confirma que `github` está habilitado
+
+Si no aparece:
+
+- Reinicia VS Code después de exportar `GITHUB_TOKEN`
+- Revisa que Docker Desktop esté levantado
+- Vuelve a correr la validación manual del paso 3
+- Abre **Output** o el panel de logs de MCP en VS Code para revisar errores de arranque
 
 ## Paso 6: Usar MCP en Copilot Chat
 
@@ -89,5 +119,5 @@ Prueba estos prompts en el chat de Copilot:
 
 - [ ] El proyecto está en GitHub (`Gabriels114/CopilotDay`)
 - [ ] Hay al menos 5 issues con labels en el repo
-- [ ] La conexión MCP funciona (Docker corriendo, token exportado)
+- [ ] La conexión MCP funciona (Docker corriendo, token exportado y servidor `github` visible en `MCP: List Servers`)
 - [ ] Puedes mostrar Copilot Chat interactuando con tus issues via MCP

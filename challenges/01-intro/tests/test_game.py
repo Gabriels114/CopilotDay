@@ -96,8 +96,6 @@ def test_start_creates_fresh_board(playing_state, default_config):
 
 # ---------------------------------------------------------------------------
 # update() — MENU phase
-# NOTE: GameState.update() has no phase guard; it always processes the timer.
-# update() in MENU phase is a no-op — timer does not tick until PLAYING
 # ---------------------------------------------------------------------------
 
 def test_menu_update_returns_same_state(menu_state):
@@ -153,7 +151,7 @@ def test_playing_update_increments_spawn_timer(playing_state):
         assert updated.spawn_timer == pytest.approx(dt)
 
 
-def test_playing_update_resets_spawn_timer_after_spawn(playing_state):
+def test_playing_update_preserves_spawn_timer_excess_after_spawn(playing_state):
     # Set spawn_timer just below the threshold so a small dt triggers a spawn
     interval = playing_state.config.mole_spawn_interval
     state = GameState(
@@ -165,7 +163,7 @@ def test_playing_update_resets_spawn_timer_after_spawn(playing_state):
         spawn_timer=interval - 0.01,
     )
     updated = state.update(0.02)
-    assert updated.spawn_timer == pytest.approx(0.0)
+    assert updated.spawn_timer == pytest.approx(0.01)
 
 
 def test_playing_update_spawns_mole_when_spawn_timer_exceeds_interval(playing_state):
@@ -212,7 +210,7 @@ def test_playing_whack_increments_score_on_hit(playing_state):
         spawn_timer=playing_state.spawn_timer,
     )
     result = state.whack(0, 0)
-    assert result.score == state.score + 1
+    assert result.score == state.score + state.config.score_multiplier
 
 
 def test_playing_whack_does_not_increment_score_on_miss(playing_state):
@@ -227,12 +225,28 @@ def test_playing_whack_returns_new_state(playing_state):
 
 
 @pytest.mark.parametrize("phase", [Phase.MENU, Phase.GAMEOVER])
-def test_whack_on_hidden_mole_does_not_change_score(menu_state, gameover_state, phase):
-    # GameState.whack() always calls try_whack regardless of phase,
-    # but with all moles hidden, it is always a miss — score stays the same.
+def test_whack_outside_playing_is_no_op(menu_state, gameover_state, phase):
     state = menu_state if phase == Phase.MENU else gameover_state
-    result = state.whack(0, 0)
-    assert result.score == state.score
+    rising = Mole(state=MoleState.RISING, progress=0.5)
+    board = Board(rows=state.board.rows, cols=state.board.cols, moles=(rising,) + state.board.moles[1:])
+    guarded_state = GameState(
+        phase=state.phase,
+        config=state.config,
+        board=board,
+        score=state.score,
+        time_remaining=state.time_remaining,
+        spawn_timer=state.spawn_timer,
+    )
+    result = guarded_state.whack(0, 0)
+    assert result is guarded_state
+    assert result.score == guarded_state.score
+    assert result.board is guarded_state.board
+
+
+def test_playing_whack_out_of_bounds_is_safe_miss(playing_state):
+    result = playing_state.whack(-1, 0)
+    assert result.score == playing_state.score
+    assert result.board is playing_state.board
 
 
 # ---------------------------------------------------------------------------

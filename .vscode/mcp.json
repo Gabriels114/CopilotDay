@@ -8,11 +8,12 @@
         "--rm",
         "-i",
         "-e", "GITHUB_PERSONAL_ACCESS_TOKEN",
-        "--toolsets", "repos,issues,pull_requests,code_search",
+        "-e", "GITHUB_TOOLSETS",
         "ghcr.io/github/github-mcp-server"
       ],
       "env": {
-        "GITHUB_PERSONAL_ACCESS_TOKEN": "${env:GITHUB_TOKEN}"
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "${env:GITHUB_TOKEN}",
+        "GITHUB_TOOLSETS": "context,repos,issues,pull_requests"
       }
     }
   }

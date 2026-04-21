@@ -35,6 +35,10 @@ def _handle_menu_click(
         return state.with_config(state.config.prev_duration())
     if "next_dur" in button_rects and button_rects["next_dur"].collidepoint(pos):
         return state.with_config(state.config.next_duration())
+    if "prev_diff" in button_rects and button_rects["prev_diff"].collidepoint(pos):
+        return state.with_config(state.config.prev_difficulty())
+    if "next_diff" in button_rects and button_rects["next_diff"].collidepoint(pos):
+        return state.with_config(state.config.next_difficulty())
     if "play" in button_rects and button_rects["play"].collidepoint(pos):
         return state.start()
     return state
