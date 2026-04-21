@@ -181,6 +181,23 @@ def test_playing_update_spawns_mole_when_spawn_timer_exceeds_interval(playing_st
     assert rising_count == 1
 
 
+def test_playing_update_spawns_multiple_moles_on_large_delta(playing_state):
+    # A large dt (e.g. tab-out spike) must not silently skip spawns
+    interval = playing_state.config.mole_spawn_interval
+    state = GameState(
+        phase=playing_state.phase,
+        config=playing_state.config,
+        board=playing_state.board,
+        score=0,
+        time_remaining=playing_state.time_remaining,
+        spawn_timer=0.0,
+    )
+    # dt covers exactly 3 full intervals
+    updated = state.update(interval * 3)
+    rising_count = sum(1 for m in updated.board.moles if m.state == MoleState.RISING)
+    assert rising_count == 3
+
+
 # ---------------------------------------------------------------------------
 # update() — GAMEOVER phase (no-op via propagation)
 # ---------------------------------------------------------------------------

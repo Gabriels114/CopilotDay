@@ -60,7 +60,7 @@ class GameState:
         new_board = self.board.update(dt, self.config.mole_visible_time)
         new_spawn_timer = self.spawn_timer + dt
 
-        if new_spawn_timer >= self.config.mole_spawn_interval:
+        while new_spawn_timer >= self.config.mole_spawn_interval:
             new_board = new_board.try_spawn()
             new_spawn_timer -= self.config.mole_spawn_interval
 
