@@ -10,10 +10,10 @@ Desarrollo personal de los retos del hackathon [WhatTheHack 071 – GitHub Copil
 | [01](./challenges/01-intro/) | Introducción a GitHub Copilot | ⬜ Pendiente |
 | [02](./challenges/02-best-practices/) | Best Practices con Copilot | ⬜ Pendiente |
 | [03](./challenges/03-mcp/) | Extensión con Model Context Protocol | ⬜ Pendiente |
-| [04](./challenges/04-customization/) | Personalización en el IDE | ⬜ Pendiente |
+| [04](./challenges/04-customization/) | Personalización en el IDE | ✅ Implementado |
 | [05](./challenges/05-dev-workflow/) | Copilot en el flujo de desarrollo | ⬜ Pendiente |
 | [06](./challenges/06-tests-docs/) | Tests y Documentación | ⬜ Pendiente |
-| [07](./challenges/07-debug-optimization/) | Debugging y Optimización | ⬜ Pendiente |
+| [07](./challenges/07-debug-optimization/) | Debugging y Optimización | ✅ Resuelto |
 
 ## Estructura
 
@@ -26,12 +26,14 @@ challenges/
 ├── 04-customization/
 ├── 05-dev-workflow/
 ├── 06-tests-docs/
-└── 07-debug-optimization/
+└── 07-debug-optimization/ ← Ejercicio aparte basado en OWASP Juice Shop
 ```
 
 ## Proyecto base
 
-El hilo conductor de los retos 01–07 es un juego **Whack-a-Mole** que se va extendiendo con cada desafío.
+El hilo conductor de los retos **01–06** es un juego **Whack-a-Mole** que se va extendiendo con cada desafío.
+
+El reto **07** es independiente: se resuelve sobre un fragmento de **OWASP Juice Shop** para practicar debugging, seguridad y optimización con Copilot.
 
 ## Referencia
 

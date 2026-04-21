@@ -1,0 +1,8 @@
+{
+  "name": "challenge-07-debug-optimization",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test"
+  }
+}
