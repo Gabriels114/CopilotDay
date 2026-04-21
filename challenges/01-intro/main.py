@@ -3,10 +3,16 @@ import pygame
 from config import GameConfig
 from game import GameState, Phase
 from renderer import (
-    WINDOW_W, WINDOW_H, FPS,
-    compute_layout, pixel_to_cell,
-    draw_background, draw_grid, draw_hud,
-    draw_menu, draw_gameover,
+    WINDOW_W,
+    WINDOW_H,
+    FPS,
+    compute_layout,
+    pixel_to_cell,
+    draw_background,
+    draw_grid,
+    draw_hud,
+    draw_menu,
+    draw_gameover,
 )
 
 _FONT_CANDIDATES = ["Arial", "Helvetica", "DejaVu Sans", "FreeSans", ""]
@@ -85,7 +91,9 @@ def main() -> None:
 
                 elif state.phase == Phase.PLAYING:
                     cell_size, ox, oy = compute_layout(state.config)
-                    cell = pixel_to_cell(event.pos[0], event.pos[1], state.config, cell_size, ox, oy)
+                    cell = pixel_to_cell(
+                        event.pos[0], event.pos[1], state.config, cell_size, ox, oy
+                    )
                     if cell is not None:
                         state = state.whack(cell[0], cell[1])
 
@@ -100,14 +108,24 @@ def main() -> None:
         draw_background(screen)
 
         if state.phase == Phase.MENU:
-            button_rects = draw_menu(screen, state, font_title, font_large, font_medium, mouse_pos)
+            button_rects = draw_menu(
+                screen, state, font_title, font_large, font_medium, mouse_pos
+            )
         elif state.phase == Phase.PLAYING:
             draw_grid(screen, state)
             draw_hud(screen, state, font_large, font_medium)
         elif state.phase == Phase.GAMEOVER:
             draw_grid(screen, state)
             draw_hud(screen, state, font_large, font_medium)
-            button_rects = draw_gameover(screen, state, high_score, font_title, font_large, font_medium, mouse_pos)
+            button_rects = draw_gameover(
+                screen,
+                state,
+                high_score,
+                font_title,
+                font_large,
+                font_medium,
+                mouse_pos,
+            )
 
         pygame.display.flip()
 

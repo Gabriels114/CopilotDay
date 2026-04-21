@@ -55,7 +55,9 @@ def test_compute_layout_centers_grid():
     config = GameConfig(grid_size=4)
     cell_size, offset_x, offset_y = renderer.compute_layout(config)
 
-    assert cell_size == min(renderer.WINDOW_W // 4, (renderer.WINDOW_H - renderer.HUD_H) // 4)
+    assert cell_size == min(
+        renderer.WINDOW_W // 4, (renderer.WINDOW_H - renderer.HUD_H) // 4
+    )
     assert offset_x >= 0
     assert offset_y >= renderer.HUD_H
 
@@ -64,9 +66,26 @@ def test_pixel_to_cell_maps_inside_and_outside_positions():
     config = GameConfig(grid_size=3)
     cell_size, offset_x, offset_y = renderer.compute_layout(config)
 
-    assert renderer.pixel_to_cell(offset_x + 1, offset_y + 1, config, cell_size, offset_x, offset_y) == (0, 0)
-    assert renderer.pixel_to_cell(offset_x - 5, offset_y, config, cell_size, offset_x, offset_y) is None
-    assert renderer.pixel_to_cell(offset_x, offset_y + (cell_size * config.grid_rows), config, cell_size, offset_x, offset_y) is None
+    assert renderer.pixel_to_cell(
+        offset_x + 1, offset_y + 1, config, cell_size, offset_x, offset_y
+    ) == (0, 0)
+    assert (
+        renderer.pixel_to_cell(
+            offset_x - 5, offset_y, config, cell_size, offset_x, offset_y
+        )
+        is None
+    )
+    assert (
+        renderer.pixel_to_cell(
+            offset_x,
+            offset_y + (cell_size * config.grid_rows),
+            config,
+            cell_size,
+            offset_x,
+            offset_y,
+        )
+        is None
+    )
 
 
 def test_draw_background_applies_gradient(screen_surface):
@@ -103,7 +122,9 @@ def test_private_drawing_helpers_modify_surface(screen_surface):
         (Mole(MoleState.WHACKED, 0.8, 0.0, 0.3), (340, 100)),
     ],
 )
-def test_draw_cell_preserves_clip_and_draws_expected_content(screen_surface, mole, center):
+def test_draw_cell_preserves_clip_and_draws_expected_content(
+    screen_surface, mole, center
+):
     old_clip = screen_surface.get_clip()
     before = _surface_bytes(screen_surface)
 
@@ -133,7 +154,9 @@ def test_draw_grid_renders_board(screen_surface):
         (3.0, COLORS["timer_low"]),
     ],
 )
-def test_draw_hud_uses_timer_threshold_colors(screen_surface, time_remaining, expected_color):
+def test_draw_hud_uses_timer_threshold_colors(
+    screen_surface, time_remaining, expected_color
+):
     state = _make_state(time_remaining=time_remaining)
     large_font = DummyFont()
     medium_font = DummyFont()
@@ -167,7 +190,9 @@ def test_draw_menu_returns_all_controls(screen_surface):
     medium_font = DummyFont()
     before = _surface_bytes(screen_surface)
 
-    rects = renderer.draw_menu(screen_surface, state, title_font, large_font, medium_font, (0, 0))
+    rects = renderer.draw_menu(
+        screen_surface, state, title_font, large_font, medium_font, (0, 0)
+    )
 
     assert set(rects) == {
         "prev_size",
@@ -189,7 +214,9 @@ def test_draw_gameover_returns_expected_buttons(screen_surface):
     medium_font = DummyFont()
     before = _surface_bytes(screen_surface)
 
-    rects = renderer.draw_gameover(screen_surface, state, 11, title_font, large_font, medium_font, (0, 0))
+    rects = renderer.draw_gameover(
+        screen_surface, state, 11, title_font, large_font, medium_font, (0, 0)
+    )
 
     assert set(rects) == {"play_again", "menu"}
     assert rects["play_again"].width > 0

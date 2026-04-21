@@ -1,4 +1,5 @@
 """Tests for board.py — Board creation, updates, spawning, and whacking."""
+
 import sys
 import os
 
@@ -12,6 +13,7 @@ from board import Board
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
 
 def all_hidden(board: Board) -> bool:
     return all(m.state == MoleState.HIDDEN for m in board.moles)
@@ -28,6 +30,7 @@ def make_full_board(rows: int = 3, cols: int = 3) -> Board:
 # ---------------------------------------------------------------------------
 # Board.create()
 # ---------------------------------------------------------------------------
+
 
 def test_create_3x3_has_nine_moles():
     board = Board.create(3, 3)
@@ -59,10 +62,10 @@ def test_create_stores_correct_rows_and_cols():
 # get(row, col)
 # ---------------------------------------------------------------------------
 
+
 def test_get_returns_correct_mole_by_index():
     moles = tuple(
-        Mole(state=MoleState.VISIBLE if i == 4 else MoleState.HIDDEN)
-        for i in range(9)
+        Mole(state=MoleState.VISIBLE if i == 4 else MoleState.HIDDEN) for i in range(9)
     )
     board = Board(rows=3, cols=3, moles=moles)
     # index 4 = row 1, col 1
@@ -100,6 +103,7 @@ def test_get_rejects_out_of_bounds_coordinates(row, col):
 # update()
 # ---------------------------------------------------------------------------
 
+
 def test_update_propagates_to_all_moles():
     # Put a rising mole in position 0; after update its progress should grow
     rising = Mole(state=MoleState.RISING, progress=0.0)
@@ -132,6 +136,7 @@ def test_update_preserves_rows_and_cols():
 # ---------------------------------------------------------------------------
 # try_spawn()
 # ---------------------------------------------------------------------------
+
 
 def test_try_spawn_changes_exactly_one_hidden_to_rising():
     board = Board.create(3, 3)
@@ -187,6 +192,7 @@ def test_try_spawn_randomness_covers_different_positions():
 # try_whack()
 # ---------------------------------------------------------------------------
 
+
 def test_try_whack_on_whackable_returns_true():
     rising = Mole(state=MoleState.RISING, progress=0.5)
     moles = (rising,) + tuple(Mole() for _ in range(8))
@@ -217,7 +223,9 @@ def test_try_whack_on_non_whackable_returns_same_board():
 
 def test_try_whack_on_visible_mole_returns_true():
     visible = Mole(state=MoleState.VISIBLE, progress=1.0)
-    moles = tuple(Mole() for _ in range(4)) + (visible,) + tuple(Mole() for _ in range(4))
+    moles = (
+        tuple(Mole() for _ in range(4)) + (visible,) + tuple(Mole() for _ in range(4))
+    )
     board = Board(rows=3, cols=3, moles=moles)
     _, hit = board.try_whack(1, 1)
     assert hit is True
@@ -246,6 +254,7 @@ def test_try_whack_out_of_bounds_returns_miss_and_same_board(row, col):
 # ---------------------------------------------------------------------------
 # Immutability
 # ---------------------------------------------------------------------------
+
 
 def test_board_is_immutable():
     board = Board.create(3, 3)

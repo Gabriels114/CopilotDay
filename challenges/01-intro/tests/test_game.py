@@ -1,4 +1,5 @@
 """Tests for game.py — GameState phases, transitions, and immutability."""
+
 import sys
 import os
 
@@ -14,6 +15,7 @@ from game import GameState, Phase
 # ---------------------------------------------------------------------------
 # Fixtures
 # ---------------------------------------------------------------------------
+
 
 @pytest.fixture()
 def default_config() -> GameConfig:
@@ -45,6 +47,7 @@ def gameover_state(playing_state) -> GameState:
 # GameState.menu()
 # ---------------------------------------------------------------------------
 
+
 def test_menu_creates_menu_phase(menu_state):
     assert menu_state.phase == Phase.MENU
 
@@ -54,7 +57,9 @@ def test_menu_score_is_zero(menu_state):
 
 
 def test_menu_time_remaining_equals_game_duration(menu_state, default_config):
-    assert menu_state.time_remaining == pytest.approx(float(default_config.game_duration))
+    assert menu_state.time_remaining == pytest.approx(
+        float(default_config.game_duration)
+    )
 
 
 def test_menu_spawn_timer_is_zero(menu_state):
@@ -62,7 +67,7 @@ def test_menu_spawn_timer_is_zero(menu_state):
 
 
 def test_menu_board_matches_config_size(menu_state, default_config):
-    expected_cells = default_config.grid_size ** 2
+    expected_cells = default_config.grid_size**2
     assert len(menu_state.board.moles) == expected_cells
 
 
@@ -74,6 +79,7 @@ def test_menu_config_stored(menu_state, default_config):
 # start()
 # ---------------------------------------------------------------------------
 
+
 def test_start_sets_playing_phase(playing_state):
     assert playing_state.phase == Phase.PLAYING
 
@@ -83,7 +89,9 @@ def test_start_score_is_zero(playing_state):
 
 
 def test_start_time_remaining_equals_game_duration(playing_state, default_config):
-    assert playing_state.time_remaining == pytest.approx(float(default_config.game_duration))
+    assert playing_state.time_remaining == pytest.approx(
+        float(default_config.game_duration)
+    )
 
 
 def test_start_spawn_timer_is_zero(playing_state):
@@ -98,6 +106,7 @@ def test_start_creates_fresh_board(playing_state, default_config):
 # update() — MENU phase
 # ---------------------------------------------------------------------------
 
+
 def test_menu_update_returns_same_state(menu_state):
     updated = menu_state.update(0.5)
     assert updated is menu_state
@@ -111,6 +120,7 @@ def test_menu_update_does_not_change_time_remaining(menu_state):
 # ---------------------------------------------------------------------------
 # update() — PLAYING phase
 # ---------------------------------------------------------------------------
+
 
 def test_playing_update_decrements_time_remaining(playing_state):
     dt = 0.5
@@ -202,6 +212,7 @@ def test_playing_update_spawns_multiple_moles_on_large_delta(playing_state):
 # update() — GAMEOVER phase (no-op via propagation)
 # ---------------------------------------------------------------------------
 
+
 def test_gameover_update_keeps_gameover_phase(gameover_state):
     # update on gameover propagates through the playing logic — time_remaining is 0
     # and will immediately return GAMEOVER again
@@ -213,11 +224,14 @@ def test_gameover_update_keeps_gameover_phase(gameover_state):
 # whack()
 # ---------------------------------------------------------------------------
 
+
 def test_playing_whack_increments_score_on_hit(playing_state):
     # Manually insert a rising mole at (0,0)
     rising = Mole(state=MoleState.RISING, progress=0.5)
     moles = (rising,) + playing_state.board.moles[1:]
-    board = Board(rows=playing_state.board.rows, cols=playing_state.board.cols, moles=moles)
+    board = Board(
+        rows=playing_state.board.rows, cols=playing_state.board.cols, moles=moles
+    )
     state = GameState(
         phase=playing_state.phase,
         config=playing_state.config,
@@ -245,7 +259,11 @@ def test_playing_whack_returns_new_state(playing_state):
 def test_whack_outside_playing_is_no_op(menu_state, gameover_state, phase):
     state = menu_state if phase == Phase.MENU else gameover_state
     rising = Mole(state=MoleState.RISING, progress=0.5)
-    board = Board(rows=state.board.rows, cols=state.board.cols, moles=(rising,) + state.board.moles[1:])
+    board = Board(
+        rows=state.board.rows,
+        cols=state.board.cols,
+        moles=(rising,) + state.board.moles[1:],
+    )
     guarded_state = GameState(
         phase=state.phase,
         config=state.config,
@@ -269,6 +287,7 @@ def test_playing_whack_out_of_bounds_is_safe_miss(playing_state):
 # ---------------------------------------------------------------------------
 # with_config()
 # ---------------------------------------------------------------------------
+
 
 def test_with_config_updates_config(menu_state):
     new_config = GameConfig(grid_size=4, game_duration=45)
@@ -310,6 +329,7 @@ def test_with_config_updates_time_remaining(menu_state):
 # Immutability
 # ---------------------------------------------------------------------------
 
+
 def test_game_state_is_frozen(playing_state):
     with pytest.raises(Exception):
         playing_state.score = 999  # type: ignore[misc]
@@ -327,7 +347,9 @@ def test_whack_does_not_mutate_original(playing_state):
     # Insert a rising mole
     rising = Mole(state=MoleState.RISING, progress=0.5)
     moles = (rising,) + playing_state.board.moles[1:]
-    board = Board(rows=playing_state.board.rows, cols=playing_state.board.cols, moles=moles)
+    board = Board(
+        rows=playing_state.board.rows, cols=playing_state.board.cols, moles=moles
+    )
     state = GameState(
         phase=playing_state.phase,
         config=playing_state.config,

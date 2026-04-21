@@ -27,7 +27,9 @@ class Mole:
             new_progress = min(1.0, self.progress + RISE_SPEED * dt)
             if new_progress >= 1.0:
                 return Mole(MoleState.VISIBLE, 1.0, 0.0, self.whack_flash)
-            return Mole(MoleState.RISING, new_progress, self.time_visible, self.whack_flash)
+            return Mole(
+                MoleState.RISING, new_progress, self.time_visible, self.whack_flash
+            )
 
         if self.state == MoleState.VISIBLE:
             new_time = self.time_visible + dt
@@ -39,7 +41,9 @@ class Mole:
             new_progress = max(0.0, self.progress - FALL_SPEED * dt)
             if new_progress <= 0.0:
                 return Mole(MoleState.HIDDEN, 0.0, 0.0, 0.0)
-            return Mole(MoleState.FALLING, new_progress, self.time_visible, self.whack_flash)
+            return Mole(
+                MoleState.FALLING, new_progress, self.time_visible, self.whack_flash
+            )
 
         if self.state == MoleState.WHACKED:
             new_flash = max(0.0, self.whack_flash - dt)
@@ -55,7 +59,12 @@ class Mole:
 
     def whack(self) -> "Mole":
         if self.state in (MoleState.RISING, MoleState.VISIBLE):
-            return Mole(MoleState.WHACKED, self.progress, self.time_visible, WHACK_FLASH_DURATION)
+            return Mole(
+                MoleState.WHACKED,
+                self.progress,
+                self.time_visible,
+                WHACK_FLASH_DURATION,
+            )
         return self
 
     def is_whackable(self) -> bool:

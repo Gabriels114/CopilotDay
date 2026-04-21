@@ -1,4 +1,5 @@
 """Tests for mole.py — Mole state machine and immutability."""
+
 import sys
 import os
 
@@ -11,6 +12,7 @@ from mole import Mole, MoleState, RISE_SPEED, FALL_SPEED, WHACK_FLASH_DURATION
 # ---------------------------------------------------------------------------
 # Fixtures
 # ---------------------------------------------------------------------------
+
 
 @pytest.fixture()
 def hidden_mole() -> Mole:
@@ -41,6 +43,7 @@ def whacked_mole() -> Mole:
 # Initial state
 # ---------------------------------------------------------------------------
 
+
 def test_initial_state_is_hidden(hidden_mole):
     assert hidden_mole.state == MoleState.HIDDEN
 
@@ -60,6 +63,7 @@ def test_initial_whack_flash_is_zero(hidden_mole):
 # ---------------------------------------------------------------------------
 # spawn()
 # ---------------------------------------------------------------------------
+
 
 def test_spawn_returns_rising_state(hidden_mole):
     spawned = hidden_mole.spawn()
@@ -85,6 +89,7 @@ def test_spawn_returns_new_instance(hidden_mole):
 # ---------------------------------------------------------------------------
 # update() — RISING state
 # ---------------------------------------------------------------------------
+
 
 def test_rising_progress_increases_by_rise_speed_times_dt(rising_mole):
     dt = 0.1
@@ -122,6 +127,7 @@ def test_rising_transition_resets_time_visible():
 # update() — VISIBLE state
 # ---------------------------------------------------------------------------
 
+
 def test_visible_time_visible_increments(visible_mole):
     dt = 0.2
     updated = visible_mole.update(dt, visible_duration=2.0)
@@ -149,6 +155,7 @@ def test_visible_to_falling_keeps_progress_at_one():
 # update() — FALLING state
 # ---------------------------------------------------------------------------
 
+
 def test_falling_progress_decreases(falling_mole):
     dt = 0.1
     updated = falling_mole.update(dt, visible_duration=1.5)
@@ -170,7 +177,9 @@ def test_falling_transitions_to_hidden_when_progress_reaches_zero():
 
 
 def test_falling_to_hidden_resets_fields():
-    mole = Mole(state=MoleState.FALLING, progress=0.05, time_visible=1.5, whack_flash=0.1)
+    mole = Mole(
+        state=MoleState.FALLING, progress=0.05, time_visible=1.5, whack_flash=0.1
+    )
     updated = mole.update(1.0, visible_duration=1.5)
     assert updated.progress == 0.0
     assert updated.time_visible == 0.0
@@ -180,6 +189,7 @@ def test_falling_to_hidden_resets_fields():
 # ---------------------------------------------------------------------------
 # update() — WHACKED state
 # ---------------------------------------------------------------------------
+
 
 def test_whacked_progress_decreases_faster_than_falling(whacked_mole):
     dt = 0.1
@@ -202,7 +212,9 @@ def test_whacked_transitions_to_hidden_when_progress_zero():
 
 
 def test_whacked_to_hidden_clears_all_fields():
-    mole = Mole(state=MoleState.WHACKED, progress=0.05, time_visible=1.0, whack_flash=0.1)
+    mole = Mole(
+        state=MoleState.WHACKED, progress=0.05, time_visible=1.0, whack_flash=0.1
+    )
     updated = mole.update(1.0, visible_duration=1.5)
     assert updated.progress == 0.0
     assert updated.whack_flash == 0.0
@@ -212,6 +224,7 @@ def test_whacked_to_hidden_clears_all_fields():
 # update() — HIDDEN state (no-op)
 # ---------------------------------------------------------------------------
 
+
 def test_hidden_update_returns_same_mole(hidden_mole):
     updated = hidden_mole.update(0.5, visible_duration=1.5)
     assert updated is hidden_mole
@@ -220,6 +233,7 @@ def test_hidden_update_returns_same_mole(hidden_mole):
 # ---------------------------------------------------------------------------
 # whack()
 # ---------------------------------------------------------------------------
+
 
 @pytest.mark.parametrize("state", [MoleState.RISING, MoleState.VISIBLE])
 def test_whack_on_whackable_state_sets_whacked(state):
@@ -235,7 +249,9 @@ def test_whack_sets_flash_duration(state):
     assert whacked.whack_flash == pytest.approx(WHACK_FLASH_DURATION)
 
 
-@pytest.mark.parametrize("state", [MoleState.HIDDEN, MoleState.FALLING, MoleState.WHACKED])
+@pytest.mark.parametrize(
+    "state", [MoleState.HIDDEN, MoleState.FALLING, MoleState.WHACKED]
+)
 def test_whack_on_non_whackable_returns_same_mole(state):
     mole = Mole(state=state, progress=0.5)
     result = mole.whack()
@@ -246,13 +262,17 @@ def test_whack_on_non_whackable_returns_same_mole(state):
 # is_whackable()
 # ---------------------------------------------------------------------------
 
-@pytest.mark.parametrize("state,expected", [
-    (MoleState.RISING, True),
-    (MoleState.VISIBLE, True),
-    (MoleState.HIDDEN, False),
-    (MoleState.FALLING, False),
-    (MoleState.WHACKED, False),
-])
+
+@pytest.mark.parametrize(
+    "state,expected",
+    [
+        (MoleState.RISING, True),
+        (MoleState.VISIBLE, True),
+        (MoleState.HIDDEN, False),
+        (MoleState.FALLING, False),
+        (MoleState.WHACKED, False),
+    ],
+)
 def test_is_whackable(state, expected):
     mole = Mole(state=state, progress=0.5)
     assert mole.is_whackable() == expected
@@ -262,8 +282,11 @@ def test_is_whackable(state, expected):
 # Immutability
 # ---------------------------------------------------------------------------
 
+
 def test_mole_is_immutable(rising_mole):
-    with pytest.raises(Exception):  # FrozenInstanceError is a subclass of AttributeError
+    with pytest.raises(
+        Exception
+    ):  # FrozenInstanceError is a subclass of AttributeError
         rising_mole.state = MoleState.VISIBLE  # type: ignore[misc]
 
 

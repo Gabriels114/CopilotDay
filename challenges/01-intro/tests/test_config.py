@@ -1,4 +1,5 @@
 """Tests for config.py — GameConfig defaults, cycling methods, and immutability."""
+
 import sys
 import os
 
@@ -12,6 +13,7 @@ from config import GameConfig, GRID_SIZES, DURATIONS
 # ---------------------------------------------------------------------------
 # Default values
 # ---------------------------------------------------------------------------
+
 
 def test_default_grid_size():
     config = GameConfig()
@@ -36,6 +38,7 @@ def test_default_mole_spawn_interval():
 # ---------------------------------------------------------------------------
 # Properties
 # ---------------------------------------------------------------------------
+
 
 def test_grid_rows_equals_grid_size():
     config = GameConfig(grid_size=4)
@@ -68,6 +71,7 @@ def test_grid_cols_for_all_valid_sizes(size):
 # next_size()
 # ---------------------------------------------------------------------------
 
+
 def test_next_size_from_3_returns_4():
     config = GameConfig(grid_size=3)
     assert config.next_size().grid_size == 4
@@ -93,7 +97,9 @@ def test_next_size_cycles_through_all():
 
 
 def test_next_size_preserves_other_fields():
-    config = GameConfig(grid_size=3, game_duration=45, mole_visible_time=2.0, mole_spawn_interval=1.0)
+    config = GameConfig(
+        grid_size=3, game_duration=45, mole_visible_time=2.0, mole_spawn_interval=1.0
+    )
     updated = config.next_size()
     assert updated.game_duration == 45
     assert updated.mole_visible_time == pytest.approx(2.0)
@@ -108,6 +114,7 @@ def test_next_size_returns_new_instance():
 # ---------------------------------------------------------------------------
 # prev_size()
 # ---------------------------------------------------------------------------
+
 
 def test_prev_size_from_5_returns_4():
     config = GameConfig(grid_size=5)
@@ -138,6 +145,7 @@ def test_prev_size_preserves_other_fields():
 # ---------------------------------------------------------------------------
 # next_duration()
 # ---------------------------------------------------------------------------
+
 
 def test_next_duration_from_15_returns_30():
     config = GameConfig(game_duration=15)
@@ -188,6 +196,7 @@ def test_next_duration_returns_new_instance():
 # prev_duration()
 # ---------------------------------------------------------------------------
 
+
 def test_prev_duration_from_90_returns_60():
     config = GameConfig(game_duration=90)
     assert config.prev_duration().game_duration == 60
@@ -212,6 +221,7 @@ def test_prev_duration_preserves_grid_size():
 # ---------------------------------------------------------------------------
 # Immutability
 # ---------------------------------------------------------------------------
+
 
 def test_game_config_is_frozen():
     config = GameConfig()

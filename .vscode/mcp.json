@@ -1,24 +1,10 @@
 {
-  "inputs": [
-    {
-      "type": "promptString",
-      "id": "github-token",
-      "description": "GitHub Personal Access Token (scopes: repo, read:org, issues)",
-      "password": true
-    }
-  ],
   "servers": {
     "github": {
       "type": "stdio",
-      "command": "docker",
-      "args": [
-        "run", "--rm", "-i",
-        "-e", "GITHUB_PERSONAL_ACCESS_TOKEN",
-        "-e", "GITHUB_TOOLSETS",
-        "ghcr.io/github/github-mcp-server"
-      ],
+      "command": "github-mcp-server",
+      "args": ["stdio"],
       "env": {
-        "GITHUB_PERSONAL_ACCESS_TOKEN": "${input:github-token}",
         "GITHUB_TOOLSETS": "context,repos,issues,pull_requests"
       }
     }

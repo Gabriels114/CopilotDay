@@ -35,7 +35,7 @@ class Board:
         return self.moles[self._index(row, col)]
 
     def _replace_mole(self, idx: int, mole: Mole) -> "Board":
-        new_moles = self.moles[:idx] + (mole,) + self.moles[idx + 1:]
+        new_moles = self.moles[:idx] + (mole,) + self.moles[idx + 1 :]
         return Board(rows=self.rows, cols=self.cols, moles=new_moles)
 
     def update(self, dt: float, visible_duration: float) -> "Board":
@@ -44,8 +44,7 @@ class Board:
 
     def try_spawn(self) -> "Board":
         hidden_indices = [
-            i for i, m in enumerate(self.moles)
-            if m.state == MoleState.HIDDEN
+            i for i, m in enumerate(self.moles) if m.state == MoleState.HIDDEN
         ]
         if not hidden_indices:
             return self

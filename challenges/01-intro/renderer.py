@@ -26,10 +26,12 @@ def compute_layout(config: GameConfig) -> Tuple[int, int, int]:
 
 
 def pixel_to_cell(
-    px: int, py: int,
+    px: int,
+    py: int,
     config: GameConfig,
     cell_size: int,
-    ox: int, oy: int,
+    ox: int,
+    oy: int,
 ) -> Optional[Tuple[int, int]]:
     col = (px - ox) // cell_size
     row = (py - oy) // cell_size
@@ -50,18 +52,29 @@ def draw_background(surface: pygame.Surface) -> None:
         pygame.draw.line(surface, (r, g, b), (0, y), (WINDOW_W, y))
 
 
-def _draw_hole(surface: pygame.Surface, cx: int, cy: int, hole_rx: int, hole_ry: int) -> None:
-    pygame.draw.ellipse(surface, COLORS["hole_back"],
-                        (cx - hole_rx, cy - hole_ry, hole_rx * 2, hole_ry * 2))
+def _draw_hole(
+    surface: pygame.Surface, cx: int, cy: int, hole_rx: int, hole_ry: int
+) -> None:
+    pygame.draw.ellipse(
+        surface,
+        COLORS["hole_back"],
+        (cx - hole_rx, cy - hole_ry, hole_rx * 2, hole_ry * 2),
+    )
     rim_rect = (cx - hole_rx, cy - hole_ry // 2, hole_rx * 2, hole_ry)
     pygame.draw.ellipse(surface, COLORS["hole_rim"], rim_rect)
-    dirt_rect = (cx - hole_rx - 6, cy - hole_ry - 4, (hole_rx + 6) * 2, (hole_ry + 4) * 2)
+    dirt_rect = (
+        cx - hole_rx - 6,
+        cy - hole_ry - 4,
+        (hole_rx + 6) * 2,
+        (hole_ry + 4) * 2,
+    )
     pygame.draw.ellipse(surface, COLORS["dirt"], dirt_rect, 5)
 
 
 def _draw_mole_head(
     surface: pygame.Surface,
-    mx: int, my: int,
+    mx: int,
+    my: int,
     radius: int,
     whacked: bool,
     flash: float,
@@ -98,13 +111,19 @@ def _draw_mole_head(
         for ex in (mx - eye_offset_x, mx + eye_offset_x):
             ey = my - eye_offset_y
             pygame.draw.circle(surface, (255, 255, 255), (ex, ey), eye_r)
-            pygame.draw.circle(surface, (30, 20, 10), (ex + 1, ey + 1), max(2, eye_r - 1))
-            pygame.draw.circle(surface, (255, 255, 255), (ex + 1, ey - 1), max(1, eye_r // 3))
+            pygame.draw.circle(
+                surface, (30, 20, 10), (ex + 1, ey + 1), max(2, eye_r - 1)
+            )
+            pygame.draw.circle(
+                surface, (255, 255, 255), (ex + 1, ey - 1), max(1, eye_r // 3)
+            )
 
     nose_rect = (mx - radius // 5, my + radius // 6, radius * 2 // 5, radius // 5)
     pygame.draw.ellipse(surface, COLORS["mole_nose"], nose_rect)
 
-    mouth_rect = pygame.Rect(mx - radius // 3, my + radius // 4, radius * 2 // 3, radius // 3)
+    mouth_rect = pygame.Rect(
+        mx - radius // 3, my + radius // 4, radius * 2 // 3, radius // 3
+    )
     if whacked:
         pygame.draw.arc(surface, (30, 20, 10), mouth_rect, math.pi, 2 * math.pi, 2)
     else:
@@ -128,7 +147,8 @@ def _draw_whack_rays(surface: pygame.Surface, cx: int, cy: int, radius: int) -> 
 
 def _draw_cell(
     surface: pygame.Surface,
-    cx: int, cy: int,
+    cx: int,
+    cy: int,
     cell_size: int,
     mole,
 ) -> None:
@@ -177,7 +197,9 @@ def draw_hud(
 ) -> None:
     hud_rect = pygame.Rect(0, 0, WINDOW_W, HUD_H)
     pygame.draw.rect(surface, COLORS["hud_bg"], hud_rect)
-    pygame.draw.line(surface, COLORS["hud_line"], (0, HUD_H - 2), (WINDOW_W, HUD_H - 2), 2)
+    pygame.draw.line(
+        surface, COLORS["hud_line"], (0, HUD_H - 2), (WINDOW_W, HUD_H - 2), 2
+    )
 
     score_surf = font_large.render(f"Score: {state.score}", True, COLORS["text_gold"])
     surface.blit(score_surf, (20, 15))
@@ -202,10 +224,14 @@ def draw_hud(
     bar_x, bar_y = 20, HUD_H - 22
     bar_w = WINDOW_W - 40
     bar_h = 12
-    pygame.draw.rect(surface, (40, 40, 40), (bar_x, bar_y, bar_w, bar_h), border_radius=6)
+    pygame.draw.rect(
+        surface, (40, 40, 40), (bar_x, bar_y, bar_w, bar_h), border_radius=6
+    )
     fill_w = int(bar_w * max(0.0, ratio))
     if fill_w > 0:
-        pygame.draw.rect(surface, timer_color, (bar_x, bar_y, fill_w, bar_h), border_radius=6)
+        pygame.draw.rect(
+            surface, timer_color, (bar_x, bar_y, fill_w, bar_h), border_radius=6
+        )
 
 
 def _draw_button(
@@ -261,7 +287,9 @@ def draw_menu(
     caption2 = font_medium.render("Duration", True, COLORS["text_gold"])
     surface.blit(caption2, (cx - caption2.get_width() // 2, row_y2 - 28))
 
-    label_dur = font_large.render(f"{state.config.game_duration}s", True, COLORS["text_white"])
+    label_dur = font_large.render(
+        f"{state.config.game_duration}s", True, COLORS["text_white"]
+    )
     surface.blit(label_dur, (cx - label_dur.get_width() // 2, row_y2 + 5))
 
     prev_dur_rect = pygame.Rect(cx - 120 - btn_w, row_y2, btn_w, btn_h)

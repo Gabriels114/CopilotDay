@@ -50,13 +50,46 @@ def test_handle_menu_click_routes_buttons():
         "play": pygame.Rect(180, 0, 20, 20),
     }
 
-    assert app_main._handle_menu_click(initial, rects["prev_size"].center, rects).config.grid_size == 3
-    assert app_main._handle_menu_click(initial, rects["next_size"].center, rects).config.grid_size == 5
-    assert app_main._handle_menu_click(initial, rects["prev_dur"].center, rects).config.game_duration == 30
-    assert app_main._handle_menu_click(initial, rects["next_dur"].center, rects).config.game_duration == 60
-    assert app_main._handle_menu_click(initial, rects["prev_diff"].center, rects).config.difficulty == Difficulty.EASY
-    assert app_main._handle_menu_click(initial, rects["next_diff"].center, rects).config.difficulty == Difficulty.HARD
-    assert app_main._handle_menu_click(initial, rects["play"].center, rects).phase == Phase.PLAYING
+    assert (
+        app_main._handle_menu_click(
+            initial, rects["prev_size"].center, rects
+        ).config.grid_size
+        == 3
+    )
+    assert (
+        app_main._handle_menu_click(
+            initial, rects["next_size"].center, rects
+        ).config.grid_size
+        == 5
+    )
+    assert (
+        app_main._handle_menu_click(
+            initial, rects["prev_dur"].center, rects
+        ).config.game_duration
+        == 30
+    )
+    assert (
+        app_main._handle_menu_click(
+            initial, rects["next_dur"].center, rects
+        ).config.game_duration
+        == 60
+    )
+    assert (
+        app_main._handle_menu_click(
+            initial, rects["prev_diff"].center, rects
+        ).config.difficulty
+        == Difficulty.EASY
+    )
+    assert (
+        app_main._handle_menu_click(
+            initial, rects["next_diff"].center, rects
+        ).config.difficulty
+        == Difficulty.HARD
+    )
+    assert (
+        app_main._handle_menu_click(initial, rects["play"].center, rects).phase
+        == Phase.PLAYING
+    )
     assert app_main._handle_menu_click(initial, (999, 999), rects) is initial
 
 
@@ -67,8 +100,14 @@ def test_handle_gameover_click_routes_buttons():
         "menu": pygame.Rect(30, 0, 20, 20),
     }
 
-    assert app_main._handle_gameover_click(state, rects["play_again"].center, rects).phase == Phase.PLAYING
-    assert app_main._handle_gameover_click(state, rects["menu"].center, rects).phase == Phase.MENU
+    assert (
+        app_main._handle_gameover_click(state, rects["play_again"].center, rects).phase
+        == Phase.PLAYING
+    )
+    assert (
+        app_main._handle_gameover_click(state, rects["menu"].center, rects).phase
+        == Phase.MENU
+    )
     assert app_main._handle_gameover_click(state, (999, 999), rects) is state
 
 
@@ -78,12 +117,14 @@ def test_main_runs_menu_to_gameover_and_back(monkeypatch):
     play_rect = pygame.Rect(100, 100, 80, 40)
     menu_rect = pygame.Rect(100, 200, 80, 40)
     calls = {"background": 0, "menu": 0, "grid": 0, "hud": 0, "gameover": []}
-    events = iter([
-        [],
-        [_mouse_event(play_rect.center)],
-        [_mouse_event(menu_rect.center)],
-        [pygame.event.Event(pygame.QUIT)],
-    ])
+    events = iter(
+        [
+            [],
+            [_mouse_event(play_rect.center)],
+            [_mouse_event(menu_rect.center)],
+            [pygame.event.Event(pygame.QUIT)],
+        ]
+    )
 
     monkeypatch.setattr(pygame.display, "set_mode", lambda size: screen)
     monkeypatch.setattr(pygame.display, "set_caption", lambda title: None)
@@ -107,7 +148,9 @@ def test_main_runs_menu_to_gameover_and_back(monkeypatch):
     def fake_draw_hud(surface, state, font_large, font_medium):
         calls["hud"] += 1
 
-    def fake_draw_gameover(surface, state, high_score, font_title, font_large, font_medium, mouse_pos):
+    def fake_draw_gameover(
+        surface, state, high_score, font_title, font_large, font_medium, mouse_pos
+    ):
         calls["gameover"].append((state.phase, high_score))
         return {"menu": menu_rect}
 
@@ -132,12 +175,14 @@ def test_main_whacks_clicked_cell_during_play(monkeypatch):
     font = pygame.font.Font(None, 24)
     play_rect = pygame.Rect(100, 100, 80, 40)
     whack_calls = []
-    events = iter([
-        [],
-        [_mouse_event(play_rect.center)],
-        [_mouse_event((300, 300))],
-        [pygame.event.Event(pygame.QUIT)],
-    ])
+    events = iter(
+        [
+            [],
+            [_mouse_event(play_rect.center)],
+            [_mouse_event((300, 300))],
+            [pygame.event.Event(pygame.QUIT)],
+        ]
+    )
 
     monkeypatch.setattr(pygame.display, "set_mode", lambda size: screen)
     monkeypatch.setattr(pygame.display, "set_caption", lambda title: None)
@@ -149,10 +194,14 @@ def test_main_whacks_clicked_cell_during_play(monkeypatch):
     monkeypatch.setattr(app_main, "_load_font", lambda size, bold=False: font)
     monkeypatch.setattr(app_main, "draw_background", lambda surface: None)
     monkeypatch.setattr(app_main, "draw_grid", lambda surface, state: None)
-    monkeypatch.setattr(app_main, "draw_hud", lambda surface, state, font_large, font_medium: None)
+    monkeypatch.setattr(
+        app_main, "draw_hud", lambda surface, state, font_large, font_medium: None
+    )
     monkeypatch.setattr(app_main, "draw_gameover", lambda *args, **kwargs: {})
     monkeypatch.setattr(app_main, "compute_layout", lambda config: (90, 10, 100))
-    monkeypatch.setattr(app_main, "pixel_to_cell", lambda px, py, config, cell_size, ox, oy: (1, 2))
+    monkeypatch.setattr(
+        app_main, "pixel_to_cell", lambda px, py, config, cell_size, ox, oy: (1, 2)
+    )
 
     def fake_draw_menu(surface, state, font_title, font_large, font_medium, mouse_pos):
         return {"play": play_rect}
